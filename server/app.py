@@ -114,7 +114,7 @@ def create_hero_power():
     db.session.add(hero_power)
     db.session.commit()
 
-    # Creating response data including the hero and power details
+    
     response_data = {
         "id": hero_power.id,
         "hero_id": hero.id,
