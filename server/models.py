@@ -14,13 +14,15 @@ db = SQLAlchemy(metadata=metadata)
 class Hero(db.Model, SerializerMixin):
     __tablename__ = 'heroes'
 
+    serialize_rules = ("-hero_powers",)
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     super_name = db.Column(db.String)
 
-    # add relationship
 
-    # add serialization rules
+    hero_powers=db.relationship('HeroPower', back_populates='hero', cascade='all, delete-orphan')
+
 
     def __repr__(self):
         return f'<Hero {self.id}>'
@@ -29,15 +31,15 @@ class Hero(db.Model, SerializerMixin):
 class Power(db.Model, SerializerMixin):
     __tablename__ = 'powers'
 
+    serialize_rules=("-hero_powers",)
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     description = db.Column(db.String)
 
-    # add relationship
-
-    # add serialization rules
-
-    # add validation
+    
+    hero_powers=db.relationship('HeroPower', back_populates='power', cascade='all, delete-orphan')
+    
 
     def __repr__(self):
         return f'<Power {self.id}>'
@@ -46,14 +48,19 @@ class Power(db.Model, SerializerMixin):
 class HeroPower(db.Model, SerializerMixin):
     __tablename__ = 'hero_powers'
 
+    serialize_rules=("-hero.hero_powers", "-power.hero_powers")
+
     id = db.Column(db.Integer, primary_key=True)
     strength = db.Column(db.String, nullable=False)
 
-    # add relationships
+    hero_id=db.Column(db.Integer, db.ForeignKey("heroes.id"))
+    power_id=db.Column(db.Integer, db.ForeignKey("powers.id"))
 
-    # add serialization rules
+    
+    hero=db.relationship('Hero', back_populates='hero_powers')
+    power=db.relationship('Power', back_populates='hero_powers')
 
-    # add validation
+
 
     def __repr__(self):
         return f'<HeroPower {self.id}>'
