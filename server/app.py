@@ -67,7 +67,9 @@ def power_by_id(id):
 
 @app.route('/powers/<int:id>', methods=['PATCH'])
 def update_power(id):
-    power = Power.query.get_or_404(id)
+    power = Power.query.get(id)
+    if not power:
+        return jsonify({'error':'Power not found'}), 404
     
     data = request.get_json()
 
@@ -88,23 +90,23 @@ def update_power(id):
 def create_hero_power():
     data = request.get_json()
 
-    # Validate data
+    
     strength = data.get('strength')
     hero_id = data.get('hero_id')
     power_id = data.get('power_id')
 
-    # Validating strength
+    
     if strength not in ['Weak', 'Average', 'Strong']:
         return jsonify({"errors": ["Invalid strength value"]}), 400
 
-    # Finding the Hero and Power by their IDs
+    
     hero = Hero.query.get(hero_id)
     power = Power.query.get(power_id)
 
     if not hero or not power:
         return jsonify({"errors": ["Hero or Power not found"]}), 404
 
-    # Creating new HeroPower
+    
     hero_power = HeroPower(
         strength=strength,
         power_id=power_id,
